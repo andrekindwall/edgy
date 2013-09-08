@@ -20,9 +20,9 @@ public class Chunk extends Node{
 	
 	public Chunk(AssetManager am, PhysicsSpace physicsSpace, int lowerX, int lowerY) {
 		Material material = new Material(am, "Common/MatDefs/Misc/Unshaded.j3md");
-		material.setColor("Color", ColorRGBA.Magenta);
+		material.setColor("Color", ColorRGBA.Green);
 		Material material1 = new Material(am, "Common/MatDefs/Misc/Unshaded.j3md");
-		material1.setColor("Color", ColorRGBA.Blue);
+		material1.setColor("Color", ColorRGBA.Black);
 		Quad quad = new Quad(Cube.SIZE, Cube.SIZE);
 		Random rand = new Random();
 		
@@ -31,7 +31,7 @@ public class Chunk extends Node{
 				for(int z=0; z<CHUNK_DEPTH; z++){
 					BlockSpace blockSpace = new BlockSpace(x, y, z);
 					if(y < 63){
-						blockSpace.setCube(new Cube(rand.nextBoolean() ? material : material1, quad, this, physicsSpace, x*Cube.SIZE, y*Cube.SIZE, z*Cube.SIZE));
+						blockSpace.setCube(new Cube(rand.nextBoolean() ? material : material1, quad, this, physicsSpace, x, y, z));
 					}
 					blockSpaces[x][y][z] = blockSpace;
 				}

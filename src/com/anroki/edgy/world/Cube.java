@@ -23,16 +23,24 @@ public class Cube {
 	private float centerX;
 	private float centerY;
 	private float centerZ;
+
+	private int x;
+	private int y;
+	private int z;
 	
-	public Cube(Material material, Quad quad, Node parent, PhysicsSpace physicsSpace, float x, float y, float z){
+	public Cube(Material material, Quad quad, Node parent, PhysicsSpace physicsSpace, int x, int y, int z){
 		this.material = material;
 		this.parent = parent;
 		this.quad = quad;
 		this.physicsSpace = physicsSpace;
+
+		this.x = x;
+		this.y = y;
+		this.z = z;
 		
-		centerX = x - HALF_SIZE;
-		centerY = y + HALF_SIZE;
-		centerZ = z + HALF_SIZE;
+		centerX = x*SIZE - HALF_SIZE;
+		centerY = y*SIZE + HALF_SIZE;
+		centerZ = z*SIZE + HALF_SIZE;
 	}
 	
 	/**
@@ -71,6 +79,10 @@ public class Cube {
 			geo.rotate(90*FastMath.DEG_TO_RAD, 0, 0);
 			break;
 		}
+
+		geo.setUserData("x", x);
+		geo.setUserData("y", y);
+		geo.setUserData("z", z);
 		
 		//Add physics to the geometry
 		RigidBodyControl physic = new RigidBodyControl(0.0f);

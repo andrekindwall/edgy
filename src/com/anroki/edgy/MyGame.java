@@ -6,27 +6,27 @@ import com.anroki.edgy.world.Chunk;
 import com.anroki.edgy.world.Cube;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.StatsAppState;
-import com.jme3.asset.plugins.ZipLocator;
 import com.jme3.bullet.BulletAppState;
-import com.jme3.bullet.collision.shapes.CollisionShape;
-import com.jme3.bullet.control.RigidBodyControl;
-import com.jme3.bullet.util.CollisionShapeFactory;
+import com.jme3.collision.CollisionResult;
+import com.jme3.collision.CollisionResults;
+import com.jme3.font.BitmapText;
 import com.jme3.input.KeyInput;
+import com.jme3.input.MouseInput;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
+import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme3.light.AmbientLight;
 import com.jme3.light.DirectionalLight;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.Ray;
 import com.jme3.math.Vector3f;
-import com.jme3.scene.Node;
-import com.jme3.scene.Spatial;
+import com.jme3.scene.Geometry;
+import com.jme3.scene.shape.Sphere;
 
 public class MyGame extends SimpleApplication implements ActionListener {
 
-	private Spatial sceneModel;
 	private BulletAppState bulletAppState;
-	private RigidBodyControl landscape;
 	private Player player;
 	private Vector3f walkDirection = new Vector3f();
 	private boolean left = false, right = false, up = false, down = false;
@@ -51,6 +51,9 @@ public class MyGame extends SimpleApplication implements ActionListener {
 	
 	@Override
 	public void simpleInitApp() {
+		initCrossHairs();
+		initMark();
+		
 		// Set up Physics
 	    bulletAppState = new BulletAppState();
 	    stateManager.attach(bulletAppState);
@@ -60,37 +63,19 @@ public class MyGame extends SimpleApplication implements ActionListener {
 	    viewPort.setBackgroundColor(new ColorRGBA(0.7f, 0.8f, 1f, 1f));
 	    setUpKeys();
 	    setUpLight();
-	 
-	    // We load the scene from the zip file and adjust its size.
-	    assetManager.registerLocator("town.zip", ZipLocator.class);
-	    sceneModel = assetManager.loadModel("main.scene");
-	    sceneModel.setLocalScale(2f);
 	    
 	    //We create our custom camera to prevent looking upside down
 	    RotationCamera newFlyCam = new RotationCamera(cam);
 	    newFlyCam.registerWithInput(inputManager);
 	    newFlyCam.setMoveSpeed(500);
 	 
-	    // We set up collision detection for the scene by creating a
-	    // compound collision shape and a static RigidBodyControl with mass zero.
-	    CollisionShape sceneShape =
-	            CollisionShapeFactory.createMeshShape((Node) sceneModel);
-	    landscape = new RigidBodyControl(sceneShape, 0);
-	    sceneModel.addControl(landscape);
-	 
 	    // We create the player
 	    // We also put the player in its starting position.
-	    //TODO: Remove this material. Temporary when developing custom onGround method.
-	    Material material = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-		material.setColor("Color", ColorRGBA.Green); 
-		material.setBoolean("VertexColor",true); 
-	    player = new Player(rootNode, material);
+	    player = new Player(rootNode);
 	    player.createObject(Chunk.CHUNK_WIDTH*Cube.SIZE/2, 64*Cube.SIZE, Chunk.CHUNK_DEPTH*Cube.SIZE/2);
 	    
 	    // We attach the scene and the player to the rootnode and the physics space,
 	    // to make them appear in the game world.
-	    rootNode.attachChild(sceneModel);
-	    bulletAppState.getPhysicsSpace().add(landscape);
 	    bulletAppState.getPhysicsSpace().add(player.getCharacterControl());
 	    
 //	    bulletAppState.getPhysicsSpace().enableDebug(assetManager);
@@ -98,8 +83,32 @@ public class MyGame extends SimpleApplication implements ActionListener {
 	    createChunks();
 	}
 	
+	private Geometry mark;
+	/** A red ball that marks the last spot that was "hit" by the "shot". */
+	protected void initMark() {
+		Sphere sphere = new Sphere(30, 30, 0.2f);
+		mark = new Geometry("BOOM!", sphere);
+		Material mark_mat = new Material(assetManager,
+				"Common/MatDefs/Misc/Unshaded.j3md");
+		mark_mat.setColor("Color", ColorRGBA.Red);
+		mark.setMaterial(mark_mat);
+	}
+	
+	protected void initCrossHairs() {
+		guiFont = assetManager.loadFont("Interface/Fonts/Default.fnt");
+		BitmapText ch = new BitmapText(guiFont, false);
+		ch.setSize(guiFont.getCharSet().getRenderedSize() * 2);
+		ch.setText("+"); // crosshairs
+		ch.setLocalTranslation(
+				// center
+				settings.getWidth() / 2 - ch.getLineWidth() / 2,
+				settings.getHeight() / 2 + ch.getLineHeight() / 2, 0);
+		guiNode.attachChild(ch);
+	}
+	
+	Chunk chunk;
 	private void createChunks() {
-		Chunk chunk = new Chunk(assetManager, bulletAppState.getPhysicsSpace(), 0, 0);
+		chunk = new Chunk(assetManager, bulletAppState.getPhysicsSpace(), 0, 0);
 		rootNode.attachChild(chunk);
 	}
 
@@ -125,11 +134,13 @@ public class MyGame extends SimpleApplication implements ActionListener {
 		inputManager.addMapping("Up", new KeyTrigger(KeyInput.KEY_W));
 		inputManager.addMapping("Down", new KeyTrigger(KeyInput.KEY_S));
 		inputManager.addMapping("Jump", new KeyTrigger(KeyInput.KEY_SPACE));
+		inputManager.addMapping("MouseLeft", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
 		inputManager.addListener(this, "Left");
 		inputManager.addListener(this, "Right");
 		inputManager.addListener(this, "Up");
 		inputManager.addListener(this, "Down");
 		inputManager.addListener(this, "Jump");
+		inputManager.addListener(this, "MouseLeft");
 	}
 
 	/**
@@ -149,9 +160,28 @@ public class MyGame extends SimpleApplication implements ActionListener {
 			if (isPressed) {
 				player.jump();
 			}
+		} else if (binding.equals("MouseLeft")) {
+			if (isPressed) {
+				shoot();
+			}
 		}
 	}
 	
+	private void shoot(){
+        CollisionResults results = new CollisionResults();
+        Ray ray = new Ray(cam.getLocation(), cam.getDirection());
+        rootNode.collideWith(ray, results);
+        
+        if (results.size() > 0) {
+          CollisionResult closest = results.getClosestCollision();
+          int x = closest.getGeometry().getUserData("x");
+          int y = closest.getGeometry().getUserData("y");
+          int z = closest.getGeometry().getUserData("z");
+          chunk.removeBlock(x, y, z);
+//          mark.setLocalTranslation(closest.getContactPoint());
+//          rootNode.attachChild(mark);
+        }
+	}
 	
 	//TODO: Temporär kod
 	int i = 0;
@@ -169,7 +199,7 @@ public class MyGame extends SimpleApplication implements ActionListener {
 	@Override
 	public void simpleUpdate(float tpf) {
 		moveCharacter();
-//		System.out.println("using: " + ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())/1048576f) + " mb");
+		System.out.println("using: " + ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())/1048576f) + " mb");
 		
 		//TODO: Temporär kod
 		//Ta bort block lite hela tiden och sen optimera chunken
