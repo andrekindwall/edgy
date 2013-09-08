@@ -29,7 +29,7 @@ public class Player extends MovingObject {
 
 	@Override
 	public float getHeight() {
-		return 6f;
+		return 5f;
 	}
 
 	@Override

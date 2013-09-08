@@ -80,14 +80,15 @@ public class Cube {
 			break;
 		}
 
+		//Add physics to the geometry
+		RigidBodyControl physics = new RigidBodyControl(0.0f);
+		geo.addControl(physics);
+		physicsSpace.add(physics);
+		
 		geo.setUserData("x", x);
 		geo.setUserData("y", y);
 		geo.setUserData("z", z);
-		
-		//Add physics to the geometry
-		RigidBodyControl physic = new RigidBodyControl(0.0f);
-		geo.addControl(physic);
-		physicsSpace.add(physic);
+		geo.setUserData("body", physics);
 		
 		return geo;
 	}
@@ -98,6 +99,7 @@ public class Cube {
 	public void detach(){
 		for(Geometry geo : geometries){
 			if(geo != null){
+				physicsSpace.remove(geo.getUserData("body"));
 				parent.detachChild(geo);
 				geo = null;
 			}

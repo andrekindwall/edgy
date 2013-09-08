@@ -17,12 +17,9 @@ import com.jme3.input.controls.KeyTrigger;
 import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme3.light.AmbientLight;
 import com.jme3.light.DirectionalLight;
-import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Ray;
 import com.jme3.math.Vector3f;
-import com.jme3.scene.Geometry;
-import com.jme3.scene.shape.Sphere;
 
 public class MyGame extends SimpleApplication implements ActionListener {
 
@@ -52,7 +49,6 @@ public class MyGame extends SimpleApplication implements ActionListener {
 	@Override
 	public void simpleInitApp() {
 		initCrossHairs();
-		initMark();
 		
 		// Set up Physics
 	    bulletAppState = new BulletAppState();
@@ -81,17 +77,6 @@ public class MyGame extends SimpleApplication implements ActionListener {
 //	    bulletAppState.getPhysicsSpace().enableDebug(assetManager);
 	    
 	    createChunks();
-	}
-	
-	private Geometry mark;
-	/** A red ball that marks the last spot that was "hit" by the "shot". */
-	protected void initMark() {
-		Sphere sphere = new Sphere(30, 30, 0.2f);
-		mark = new Geometry("BOOM!", sphere);
-		Material mark_mat = new Material(assetManager,
-				"Common/MatDefs/Misc/Unshaded.j3md");
-		mark_mat.setColor("Color", ColorRGBA.Red);
-		mark.setMaterial(mark_mat);
 	}
 	
 	protected void initCrossHairs() {
@@ -178,8 +163,6 @@ public class MyGame extends SimpleApplication implements ActionListener {
           int y = closest.getGeometry().getUserData("y");
           int z = closest.getGeometry().getUserData("z");
           chunk.removeBlock(x, y, z);
-//          mark.setLocalTranslation(closest.getContactPoint());
-//          rootNode.attachChild(mark);
         }
 	}
 	
