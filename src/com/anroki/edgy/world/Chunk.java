@@ -9,6 +9,7 @@ import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.scene.Node;
 import com.jme3.scene.shape.Quad;
+import com.jme3.texture.Texture;
 
 public class Chunk extends Node{
 
@@ -19,10 +20,12 @@ public class Chunk extends Node{
 	private BlockSpace[][][] blockSpaces = new BlockSpace[CHUNK_WIDTH][CHUNK_HEIGHT][CHUNK_DEPTH];
 	
 	public Chunk(AssetManager am, PhysicsSpace physicsSpace, int lowerX, int lowerY) {
+		Texture texture = am.loadTexture("/Textures/dirt.jpg");
+		Texture texture1 = am.loadTexture("/Textures/stone.jpg");
 		Material material = new Material(am, "Common/MatDefs/Misc/Unshaded.j3md");
-		material.setColor("Color", ColorRGBA.Green);
+		material.setTexture("ColorMap", texture);
 		Material material1 = new Material(am, "Common/MatDefs/Misc/Unshaded.j3md");
-		material1.setColor("Color", ColorRGBA.Black);
+		material1.setTexture("ColorMap", texture1);
 		Quad quad = new Quad(Cube.SIZE, Cube.SIZE);
 		Random rand = new Random();
 		
