@@ -34,8 +34,8 @@ public class Player extends MovingObject {
 	}
 
 	@Override
-	protected int getAxis() {
-		return 1;
+	protected Axis getAxis() {
+		return Axis.Y;
 	}
 
 	@Override
@@ -45,12 +45,12 @@ public class Player extends MovingObject {
 
 	@Override
 	protected float getFallSpeed() {
-		return 30f;
+		return 60f;
 	}
 
 	@Override
 	protected float getGravity() {
-		return 30f;
+		return 50f;
 	}
 	
 	public float getFlyspeed() {

@@ -35,8 +35,8 @@ public abstract class MovingObject {
 	 * @param localTranslation Local translation
 	 */
 	public void createObject(Vector3f localTranslation) {
-		CapsuleCollisionShape capsuleShape = new CapsuleCollisionShape(getRadius(), getHeight(), getAxis());
-		controller = new CharacterControl(capsuleShape, 0.05f);
+		CapsuleCollisionShape capsuleShape = new CapsuleCollisionShape(getRadius(), getHeight(), getAxis().getValue());
+		controller = new CharacterControl(capsuleShape, 0.01f);
 		controller.setJumpSpeed(getJumpSpeed());
 		controller.setFallSpeed(getFallSpeed());
 	    controller.setGravity(getGravity());
@@ -79,9 +79,9 @@ public abstract class MovingObject {
 	protected abstract float getHeight();
 	
 	/**
-	 * @return ???
+	 * @return Set Axis.
 	 */
-	protected abstract int getAxis();
+	protected abstract Axis getAxis();
 	
 	/**
 	 * @return The jump speed of the object.
@@ -98,5 +98,17 @@ public abstract class MovingObject {
 	 */
 	protected abstract float getGravity();
 	
+	protected enum Axis{
+		X(0),
+		Y(1),
+		Z(2);
+		private final int axis;
+		private Axis(int axis){
+			this.axis = axis;
+		}
+		public int getValue() {
+			return axis;
+		}
+	}
 	
 }
