@@ -1,14 +1,7 @@
 package com.anroki.edgy.objects;
 
-import com.jme3.collision.CollisionResult;
-import com.jme3.collision.CollisionResults;
 import com.jme3.material.Material;
-import com.jme3.math.Ray;
-import com.jme3.math.Vector3f;
-import com.jme3.scene.Geometry;
-import com.jme3.scene.Mesh;
 import com.jme3.scene.Node;
-import com.jme3.scene.VertexBuffer;
 
 
 public class Player extends MovingObject {
@@ -56,6 +49,13 @@ public class Player extends MovingObject {
 	@Override
 	protected float getGravity() {
 		return 30f;
+	}
+	
+	@Override
+	public void jump() {
+		if(onGround()){
+			super.jump();
+		}
 	}
 	
 	public boolean onGround() {

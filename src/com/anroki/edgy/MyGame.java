@@ -80,6 +80,7 @@ public class MyGame extends SimpleApplication implements ActionListener {
 	 
 	    // We create the player
 	    // We also put the player in its starting position.
+	    //TODO: Remove this material. Temporary when developing custom onGround method.
 	    Material material = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
 		material.setColor("Color", ColorRGBA.Green); 
 		material.setBoolean("VertexColor",true); 
@@ -146,13 +147,13 @@ public class MyGame extends SimpleApplication implements ActionListener {
 			down = isPressed;
 		} else if (binding.equals("Jump")) {
 			if (isPressed) {
-				if(player.onGround()){
-					player.jump();
-				}
+				player.jump();
 			}
 		}
 	}
 	
+	
+	//TODO: Temporär kod
 	int i = 0;
 	int x = 0;
 	int y = 0;
@@ -170,7 +171,8 @@ public class MyGame extends SimpleApplication implements ActionListener {
 		moveCharacter();
 //		System.out.println("using: " + ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())/1048576f) + " mb");
 		
-//		Följande är temporär kod för att ta bort block lite hela tiden och sen optimera chunken
+		//TODO: Temporär kod
+		//Ta bort block lite hela tiden och sen optimera chunken
 //		if(i % 100 == 0){
 //			if (chunk != null) {
 //				System.out.println("using: " + ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576f) + " mb");
