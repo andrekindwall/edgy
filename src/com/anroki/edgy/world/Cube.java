@@ -4,6 +4,7 @@ import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.material.Material;
 import com.jme3.math.FastMath;
+import com.jme3.renderer.queue.RenderQueue.Bucket;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.shape.Quad;
@@ -51,6 +52,7 @@ public class Cube {
 	private Geometry createFace(Direction dir){
 		Geometry geo = new Geometry(dir.name(), quad);
 		geo.setMaterial(material);
+		geo.setQueueBucket(Bucket.Transparent);
 		geometries[dir.ordinal()] = geo;
 		
 		switch (dir) {

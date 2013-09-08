@@ -6,6 +6,7 @@ import com.anroki.edgy.world.Cube.Direction;
 import com.jme3.asset.AssetManager;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.material.Material;
+import com.jme3.material.RenderState.BlendMode;
 import com.jme3.math.ColorRGBA;
 import com.jme3.scene.Node;
 import com.jme3.scene.shape.Quad;
@@ -20,12 +21,13 @@ public class Chunk extends Node{
 	private BlockSpace[][][] blockSpaces = new BlockSpace[CHUNK_WIDTH][CHUNK_HEIGHT][CHUNK_DEPTH];
 	
 	public Chunk(AssetManager am, PhysicsSpace physicsSpace, int lowerX, int lowerY) {
-		Texture texture = am.loadTexture("/Textures/dirt.jpg");
+		Texture texture = am.loadTexture("/Textures/glass.png");
 		Texture texture1 = am.loadTexture("/Textures/stone.jpg");
 		Material material = new Material(am, "Common/MatDefs/Misc/Unshaded.j3md");
 		material.setTexture("ColorMap", texture);
 		Material material1 = new Material(am, "Common/MatDefs/Misc/Unshaded.j3md");
 		material1.setTexture("ColorMap", texture1);
+		material.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
 		Quad quad = new Quad(Cube.SIZE, Cube.SIZE);
 		Random rand = new Random();
 		
