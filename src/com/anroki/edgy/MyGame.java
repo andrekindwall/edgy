@@ -1,11 +1,9 @@
 package com.anroki.edgy;
 
-import java.util.ArrayList;
-import java.util.Random;
-
 import com.anroki.edgy.camera.RotationCamera;
 import com.anroki.edgy.objects.Player;
 import com.anroki.edgy.world.Chunk;
+import com.anroki.edgy.world.Cube;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.StatsAppState;
 import com.jme3.asset.plugins.ZipLocator;
@@ -21,7 +19,6 @@ import com.jme3.light.DirectionalLight;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
-import com.jme3.scene.BatchNode;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 
@@ -51,7 +48,7 @@ public class MyGame extends SimpleApplication implements ActionListener {
 		MyGame app = new MyGame();
 		app.start();
 	}
-
+	
 	@Override
 	public void simpleInitApp() {
 		// Set up Physics
@@ -83,8 +80,11 @@ public class MyGame extends SimpleApplication implements ActionListener {
 	 
 	    // We create the player
 	    // We also put the player in its starting position.
-	    player = new Player();
-	    player.createObject(0, 10, 0);
+	    Material material = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+		material.setColor("Color", ColorRGBA.Green); 
+		material.setBoolean("VertexColor",true); 
+	    player = new Player(rootNode, material);
+	    player.createObject(Chunk.CHUNK_WIDTH*Cube.SIZE/2, 64*Cube.SIZE, Chunk.CHUNK_DEPTH*Cube.SIZE/2);
 	    
 	    // We attach the scene and the player to the rootnode and the physics space,
 	    // to make them appear in the game world.
@@ -94,11 +94,11 @@ public class MyGame extends SimpleApplication implements ActionListener {
 	    
 //	    bulletAppState.getPhysicsSpace().enableDebug(assetManager);
 	    
-	    createBoxes();
+	    createChunks();
 	}
 	
-	private void createBoxes() {
-		Chunk chunk = new Chunk(assetManager);
+	private void createChunks() {
+		Chunk chunk = new Chunk(assetManager, bulletAppState.getPhysicsSpace(), 0, 0);
 		rootNode.attachChild(chunk);
 	}
 
@@ -146,10 +146,17 @@ public class MyGame extends SimpleApplication implements ActionListener {
 			down = isPressed;
 		} else if (binding.equals("Jump")) {
 			if (isPressed) {
-				player.jump();
+				if(player.onGround()){
+					player.jump();
+				}
 			}
 		}
 	}
+	
+	int i = 0;
+	int x = 0;
+	int y = 0;
+	int z = 0;
 	
 	/**
 	 * This is the main event loop--walking happens here. We check in which
@@ -161,8 +168,35 @@ public class MyGame extends SimpleApplication implements ActionListener {
 	@Override
 	public void simpleUpdate(float tpf) {
 		moveCharacter();
+//		System.out.println("using: " + ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())/1048576f) + " mb");
 		
-		System.out.println("using: " + ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())/1048576f) + " mb");
+//		Följande är temporär kod för att ta bort block lite hela tiden och sen optimera chunken
+//		if(i % 100 == 0){
+//			if (chunk != null) {
+//				System.out.println("using: " + ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576f) + " mb");
+//				chunk.removeBlock(x, y, z);
+//				chunk.detachAllChildren();
+//				chunk.showVisibleFaces();
+//				GeometryBatchFactory.optimize(chunk);
+//				x++;
+//				if(x==Chunk.CHUNK_WIDTH){
+//					x = 0;
+//					y++;
+//					if(y==Chunk.CHUNK_HEIGHT){
+//						y = 0;
+//						z++;
+//						if(z==Chunk.CHUNK_DEPTH){
+//							z = 0;
+//						}
+//					}
+//				}
+//			}
+//		}
+//		
+//		if(i % 400 == 0){
+//			
+//		}
+//		i++;
 	}
 	
 	private void moveCharacter(){

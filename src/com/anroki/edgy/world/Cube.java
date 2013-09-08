@@ -1,5 +1,7 @@
 package com.anroki.edgy.world;
 
+import com.jme3.bullet.PhysicsSpace;
+import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.material.Material;
 import com.jme3.math.FastMath;
 import com.jme3.scene.Geometry;
@@ -10,21 +12,23 @@ public class Cube {
 
 	public static final float SIZE = 4;
 	private static final float HALF_SIZE = SIZE / 2f;
-	
+
 	private Geometry geometries[] = new Geometry[6];
 
 	private Quad quad;
 	private Material material;
 	private Node parent;
+	private PhysicsSpace physicsSpace;
 
 	private float centerX;
 	private float centerY;
 	private float centerZ;
 	
-	public Cube(Material material, Quad quad, Node parent, float x, float y, float z){
+	public Cube(Material material, Quad quad, Node parent, PhysicsSpace physicsSpace, float x, float y, float z){
 		this.material = material;
 		this.parent = parent;
 		this.quad = quad;
+		this.physicsSpace = physicsSpace;
 		
 		centerX = x - HALF_SIZE;
 		centerY = y + HALF_SIZE;
@@ -40,6 +44,7 @@ public class Cube {
 		Geometry geo = new Geometry(dir.name(), quad);
 		geo.setMaterial(material);
 		geometries[dir.ordinal()] = geo;
+		
 		switch (dir) {
 		case NORTH:
 			geo.setLocalTranslation(centerX+SIZE, centerY-SIZE, centerZ-SIZE);
@@ -66,7 +71,25 @@ public class Cube {
 			geo.rotate(90*FastMath.DEG_TO_RAD, 0, 0);
 			break;
 		}
+		
+		//Add physics to the geometry
+		RigidBodyControl physic = new RigidBodyControl(0.0f);
+		geo.addControl(physic);
+		physicsSpace.add(physic);
+		
 		return geo;
+	}
+	
+	/**
+	 * Detaches all faces from parent.
+	 */
+	public void detach(){
+		for(Geometry geo : geometries){
+			if(geo != null){
+				parent.detachChild(geo);
+				geo = null;
+			}
+		}
 	}
 	
 	/**
