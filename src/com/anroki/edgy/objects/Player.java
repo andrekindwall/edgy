@@ -64,9 +64,9 @@ public class Player extends MovingObject {
 		}
 	}
 	
-	public void flyMode(double difference){
-		if (difference < 300 && this.getCharacterControl().getFallSpeed() == 30) this.getCharacterControl().setFallSpeed(0);
-		else if (difference < 300 && this.getCharacterControl().getFallSpeed() == 0) this.getCharacterControl().setFallSpeed(30);
+	public void flyMode(boolean on){
+		if (on) this.getCharacterControl().setFallSpeed(0);
+		else if (on == false) this.getCharacterControl().setFallSpeed(30);
 	}
 	
 	public boolean onGround() {
@@ -79,7 +79,7 @@ public class Player extends MovingObject {
         world.collideWith(ray, results);
         if (results.size() > 0) {
             CollisionResult hit = results.getClosestCollision();
-            if(hit.getDistance() < 4.55f){
+            if(hit.getDistance() < 1.55f){
             	return true;
             }
         }

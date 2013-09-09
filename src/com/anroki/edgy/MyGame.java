@@ -28,7 +28,7 @@ public class MyGame extends SimpleApplication implements ActionListener {
 	private Player player;
 	private Vector3f walkDirection = new Vector3f();
 	private long currentTime = 0, lastTime = 0;
-	private double difference;
+	private float difference;
 	private boolean left = false, right = false, up = false, down = false, space = false, flydown = false;
 
 	// Temporary vectors used on each frame.
@@ -154,7 +154,8 @@ public class MyGame extends SimpleApplication implements ActionListener {
 				lastTime = currentTime;
 				currentTime = System.currentTimeMillis();
 				difference = (currentTime - lastTime);
-				player.flyMode(difference);
+				if (difference < 300 && player.getCharacterControl().getFallSpeed() == 30) player.flyMode(true);
+				else if (difference < 300 && player.getCharacterControl().getFallSpeed() == 0) player.flyMode(false);
 				player.jump();
 			}
 			space = isPressed;
@@ -229,6 +230,7 @@ public class MyGame extends SimpleApplication implements ActionListener {
 	
 	private void moveCharacter(){
 		walkDirection.set(0, 0, 0);
+		if (player.onGround()) player.flyMode(false);
 		if(left || right || up || down){
 			camLeft.set(cam.getLeft()).multLocal(player.getSpeed());
 			if(up || down){
