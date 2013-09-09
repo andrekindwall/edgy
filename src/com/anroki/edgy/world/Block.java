@@ -2,22 +2,22 @@ package com.anroki.edgy.world;
 
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.control.RigidBodyControl;
-import com.jme3.material.Material;
 import com.jme3.math.FastMath;
 import com.jme3.renderer.queue.RenderQueue.Bucket;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.shape.Quad;
 
-public class Cube {
+public class Block {
 
 	public static final float SIZE = 4;
 	private static final float HALF_SIZE = SIZE / 2f;
 
 	private Geometry geometries[] = new Geometry[6];
 
-	private Quad quad;
-	private Material material;
+	private BlockType blockType;
+	
+	private static Quad quad = new Quad(SIZE, SIZE);
 	private Node parent;
 	private PhysicsSpace physicsSpace;
 
@@ -29,10 +29,9 @@ public class Cube {
 	private int y;
 	private int z;
 	
-	public Cube(Material material, Quad quad, Node parent, PhysicsSpace physicsSpace, int x, int y, int z){
-		this.material = material;
+	public Block(BlockType blockType, Node parent, PhysicsSpace physicsSpace, int x, int y, int z){
+		this.blockType = blockType;
 		this.parent = parent;
-		this.quad = quad;
 		this.physicsSpace = physicsSpace;
 
 		this.x = x;
@@ -51,8 +50,10 @@ public class Cube {
 	 */
 	private Geometry createFace(Direction dir){
 		Geometry geo = new Geometry(dir.name(), quad);
-		geo.setMaterial(material);
-		geo.setQueueBucket(Bucket.Transparent);
+		geo.setMaterial(blockType.getMaterial());
+		if(isTransparent()){
+			geo.setQueueBucket(Bucket.Transparent);
+		}
 		geometries[dir.ordinal()] = geo;
 		
 		switch (dir) {
@@ -112,7 +113,7 @@ public class Cube {
 	 * @return True if texture contains any transparent pixels, otherwise false.
 	 */
 	public boolean isTransparent(){
-		return false;
+		return blockType.isTransparent();
 	}
 	
 	/**

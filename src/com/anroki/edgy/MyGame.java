@@ -2,8 +2,9 @@ package com.anroki.edgy;
 
 import com.anroki.edgy.camera.RotationCamera;
 import com.anroki.edgy.objects.Player;
+import com.anroki.edgy.world.Block;
+import com.anroki.edgy.world.BlockType;
 import com.anroki.edgy.world.Chunk;
-import com.anroki.edgy.world.Cube;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.StatsAppState;
 import com.jme3.bullet.BulletAppState;
@@ -50,6 +51,7 @@ public class MyGame extends SimpleApplication implements ActionListener {
 	
 	@Override
 	public void simpleInitApp() {
+		BlockType.initAssetManager(assetManager);
 		initCrossHairs();
 		
 		// Set up Physics
@@ -70,7 +72,7 @@ public class MyGame extends SimpleApplication implements ActionListener {
 	    // We create the player
 	    // We also put the player in its starting position.
 	    player = new Player(rootNode);
-	    player.createObject(Chunk.CHUNK_WIDTH*Cube.SIZE/2, 64*Cube.SIZE, Chunk.CHUNK_DEPTH*Cube.SIZE/2);
+	    player.createObject(Chunk.CHUNK_WIDTH*Block.SIZE/2, 64*Block.SIZE, Chunk.CHUNK_DEPTH*Block.SIZE/2);
 	    
 	    // We attach the scene and the player to the rootnode and the physics space,
 	    // to make them appear in the game world.
@@ -95,7 +97,7 @@ public class MyGame extends SimpleApplication implements ActionListener {
 	
 	Chunk chunk;
 	private void createChunks() {
-		chunk = new Chunk(assetManager, bulletAppState.getPhysicsSpace(), 0, 0);
+		chunk = new Chunk(bulletAppState.getPhysicsSpace(), 0, 0);
 		rootNode.attachChild(chunk);
 	}
 

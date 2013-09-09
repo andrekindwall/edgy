@@ -1,10 +1,10 @@
 package com.anroki.edgy.world;
 
-import com.anroki.edgy.world.Cube.Direction;
+import com.anroki.edgy.world.Block.Direction;
 
 public class BlockSpace {
 
-	private Cube cube;
+	private Block cube;
 
 	private int x;
 	private int y;
@@ -25,7 +25,7 @@ public class BlockSpace {
 	}
 	
 	/**
-	 * @see {@link com.anroki.edgy.world.Cube#setFaceVisibility(Direction, boolean) Cube.setFaceVisibility}
+	 * @see {@link com.anroki.edgy.world.Block#setFaceVisibility(Direction, boolean) Cube.setFaceVisibility}
 	 */
 	public void setFaceVisibility(Direction dir, boolean visible){
 		if(cube != null){
@@ -40,11 +40,11 @@ public class BlockSpace {
 		return cube == null;
 	}
 	
-	public void setCube(Cube cube) {
+	public void setCube(Block cube) {
 		this.cube = cube;
 	}
 	
-	public Cube getCube() {
+	public Block getCube() {
 		return cube;
 	}
 	
