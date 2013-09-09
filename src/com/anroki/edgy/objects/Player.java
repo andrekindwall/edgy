@@ -20,7 +20,7 @@ public class Player extends MovingObject {
 	 * @return The speed of the player. (not the current speed)
 	 */
 	public float getSpeed(){
-		return 0.4f;
+		return 0.5f;
 	}
 
 	@Override
@@ -40,7 +40,7 @@ public class Player extends MovingObject {
 
 	@Override
 	protected float getJumpSpeed() {
-		return 15f;
+		return 20f;
 	}
 
 	@Override
@@ -54,7 +54,7 @@ public class Player extends MovingObject {
 	}
 	
 	public float getFlyspeed() {
-		return 0.8f;
+		return 0.5f;
 	}
 	
 	@Override
@@ -66,7 +66,7 @@ public class Player extends MovingObject {
 	
 	public void flyMode(boolean on){
 		if (on) this.getCharacterControl().setFallSpeed(0);
-		else if (on == false) this.getCharacterControl().setFallSpeed(30);
+		else if (on == false) this.getCharacterControl().setFallSpeed(getFallSpeed());
 	}
 	
 	public boolean onGround() {
@@ -79,7 +79,7 @@ public class Player extends MovingObject {
         world.collideWith(ray, results);
         if (results.size() > 0) {
             CollisionResult hit = results.getClosestCollision();
-            if(hit.getDistance() < 1.55f){
+            if(hit.getDistance() < 3.55f){
             	return true;
             }
         }

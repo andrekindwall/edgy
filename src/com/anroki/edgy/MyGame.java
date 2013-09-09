@@ -154,8 +154,8 @@ public class MyGame extends SimpleApplication implements ActionListener {
 				lastTime = currentTime;
 				currentTime = System.currentTimeMillis();
 				difference = (currentTime - lastTime);
-				if (difference < 300 && player.getCharacterControl().getFallSpeed() == 30) player.flyMode(true);
-				else if (difference < 300 && player.getCharacterControl().getFallSpeed() == 0) player.flyMode(false);
+				if (difference < 350 && player.getCharacterControl().getFallSpeed() == 60) player.flyMode(true);
+				else if (difference < 350 && player.getCharacterControl().getFallSpeed() == 0) player.flyMode(false);
 				player.jump();
 			}
 			space = isPressed;
