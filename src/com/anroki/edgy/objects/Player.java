@@ -10,6 +10,7 @@ import com.jme3.scene.Node;
 public class Player extends MovingObject {
 	
 	private Node world;
+	
 	public Player(Node world) {
 		super();
 		this.world = world;
@@ -52,11 +53,20 @@ public class Player extends MovingObject {
 		return 30f;
 	}
 	
+	public float getFlyspeed() {
+		return 0.8f;
+	}
+	
 	@Override
 	public void jump() {
 		if(onGround()){
 			super.jump();
 		}
+	}
+	
+	public void flyMode(double difference){
+		if (difference < 300 && this.getCharacterControl().getFallSpeed() == 30) this.getCharacterControl().setFallSpeed(0);
+		else if (difference < 300 && this.getCharacterControl().getFallSpeed() == 0) this.getCharacterControl().setFallSpeed(30);
 	}
 	
 	public boolean onGround() {

@@ -26,7 +26,9 @@ public class MyGame extends SimpleApplication implements ActionListener {
 	private BulletAppState bulletAppState;
 	private Player player;
 	private Vector3f walkDirection = new Vector3f();
-	private boolean left = false, right = false, up = false, down = false;
+	private long currentTime = 0, lastTime = 0;
+	private double difference;
+	private boolean left = false, right = false, up = false, down = false, space = false, flydown = false;
 
 	// Temporary vectors used on each frame.
 	// They here to avoid instanciating new vectors on each frame
@@ -119,12 +121,14 @@ public class MyGame extends SimpleApplication implements ActionListener {
 		inputManager.addMapping("Up", new KeyTrigger(KeyInput.KEY_W));
 		inputManager.addMapping("Down", new KeyTrigger(KeyInput.KEY_S));
 		inputManager.addMapping("Jump", new KeyTrigger(KeyInput.KEY_SPACE));
+		inputManager.addMapping("Flydown", new KeyTrigger(KeyInput.KEY_LSHIFT));
 		inputManager.addMapping("MouseLeft", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
 		inputManager.addListener(this, "Left");
 		inputManager.addListener(this, "Right");
 		inputManager.addListener(this, "Up");
 		inputManager.addListener(this, "Down");
 		inputManager.addListener(this, "Jump");
+		inputManager.addListener(this, "Flydown");
 		inputManager.addListener(this, "MouseLeft");
 	}
 
@@ -141,10 +145,17 @@ public class MyGame extends SimpleApplication implements ActionListener {
 			up = isPressed;
 		} else if (binding.equals("Down")) {
 			down = isPressed;
+		} else if (binding.equals("Flydown")) {
+			flydown = isPressed;
 		} else if (binding.equals("Jump")) {
 			if (isPressed) {
+				lastTime = currentTime;
+				currentTime = System.currentTimeMillis();
+				difference = (currentTime - lastTime);
+				player.flyMode(difference);
 				player.jump();
 			}
+			space = isPressed;
 		} else if (binding.equals("MouseLeft")) {
 			if (isPressed) {
 				shoot();
@@ -182,7 +193,7 @@ public class MyGame extends SimpleApplication implements ActionListener {
 	@Override
 	public void simpleUpdate(float tpf) {
 		moveCharacter();
-		System.out.println("using: " + ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())/1048576f) + " mb");
+		// System.out.println("using: " + ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())/1048576f) + " mb");
 		
 		//TODO: Temporär kod
 		//Ta bort block lite hela tiden och sen optimera chunken
@@ -234,6 +245,13 @@ public class MyGame extends SimpleApplication implements ActionListener {
 				walkDirection.addLocal(camDir.negate());
 			}
 		}
+		if (space && player.getCharacterControl().getFallSpeed() == 0){
+			player.getCharacterControl().setPhysicsLocation(new Vector3f(player.getPhysicsLocation().x, player.getPhysicsLocation().y + player.getFlyspeed(), player.getPhysicsLocation().z));
+		}
+		else if(flydown && player.getCharacterControl().getFallSpeed() == 0){
+			player.getCharacterControl().setPhysicsLocation(new Vector3f(player.getPhysicsLocation().x, player.getPhysicsLocation().y - player.getFlyspeed(), player.getPhysicsLocation().z));
+		}
+
 		player.setWalkDirection(walkDirection);
 		cam.setLocation(player.getPhysicsLocation());
 	}
